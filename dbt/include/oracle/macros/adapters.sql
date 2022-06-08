@@ -256,6 +256,9 @@
      pragma EXCEPTION_INIT(attempted_ddl_on_in_use_GTT, -14452);
   BEGIN
      SAVEPOINT start_transaction;
+     {% if relation.is_table -%}
+     EXECUTE IMMEDIATE 'TRUNCATE TABLE {{ relation.quote(schema=False, identifier=False) }}';
+     {%- endif -%}
      EXECUTE IMMEDIATE 'DROP {{ relation.type }} {{ relation.quote(schema=False, identifier=False) }} cascade constraint';
      COMMIT;
   EXCEPTION
